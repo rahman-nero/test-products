@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Seller\Auth;
+namespace App\Http\Controllers\User\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Seller\Auth\RegisterRequest;
+use App\Http\Requests\User\Auth\RegisterRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -11,7 +11,7 @@ final class RegisterController extends Controller
 {
     public function index()
     {
-        return view('seller.auth.register');
+        return view('user.auth.register');
     }
 
     public function store(RegisterRequest $request)
@@ -26,13 +26,13 @@ final class RegisterController extends Controller
                 'email' => $email,
                 'password' => Hash::make($password)
             ]);
-            $user->assignRole('seller');
+            $user->assignRole('consumer');
 
         } catch (\Exception $e) {
             return back()->withErrors(['Произошла ошибка при регистрации, пожалуйста, повторите попытку позднее']);
         }
 
         return redirect()
-            ->route('seller.login');
+            ->route('user.login');
     }
 }

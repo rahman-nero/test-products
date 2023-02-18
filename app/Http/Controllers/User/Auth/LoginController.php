@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Seller\Auth;
+namespace App\Http\Controllers\User\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Seller\Auth\LoginRequest;
+use App\Http\Requests\User\Auth\LoginRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,9 +12,10 @@ final class LoginController extends Controller
 {
     public function index()
     {
-        return view('seller.auth.login');
+        return view('user.auth.login');
     }
 
+    // TODO: Логин у каждого типа одинаковый, вынеси отдельно
     public function store(LoginRequest $request)
     {
         $email = $request->input('email');
@@ -29,7 +30,7 @@ final class LoginController extends Controller
         Auth::login($user, true);
 
         return redirect()
-            ->route('seller.main');
+            ->route('user.main');
     }
 
     public function logout()
@@ -37,6 +38,6 @@ final class LoginController extends Controller
         Auth::logout();
 
         return redirect()
-            ->route('seller.main');
+            ->route('user.main');
     }
 }
