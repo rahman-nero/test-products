@@ -39,6 +39,10 @@ services:
             - ./:/var/www/
         ports:
             - "9001:9001"
+        depends_on:
+            - mysql
+            - redis
+
 
    php-fpm:
         build:
