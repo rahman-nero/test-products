@@ -1,0 +1,73 @@
+version: '3.7'
+services:
+   nginx:
+        restart: unless-stopped
+        build:
+            context: ./
+            dockerfile: docker/development/nginx/Dockerfile
+        volumes:
+            - ./:/var/www
+            - ./docker/development/nginx/conf.d/:/etc/nginx/conf.d/
+            - ./docker/development/nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./docker/development/logs:/var/log/nginx/
+        ports:
+            - 8080:80
+
+   mysql:
+        image: mysql:8.0
+        restart: unless-stopped
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_USER=rahman
+            - MYSQL_PASSWORD=rahman
+            - MYSQL_DATABASE=app
+            - TZ=Europe/Moscow
+        volumes:
+            - ./docker/development/running/mysql:/var/lib/mysql/
+        ports:
+            - "33006:3306"
+
+   php-cli:
+        build:
+            context: ./
+            dockerfile: docker/development/php-cli/Dockerfile
+            args:
+                WWWUSER: ${USER}
+        user: ${USER}
+        tty: true
+        volumes:
+            - ./:/var/www/
+        ports:
+            - "9001:9001"
+
+   php-fpm:
+        build:
+            context: ./
+            dockerfile: docker/development/php-fpm/Dockerfile
+            args:
+                WWWUSER: ${USER}
+        user: ${USER}
+        volumes:
+            - ./:/var/www/
+            - ./docker/development/logs/:/var/log/php-fpm
+            - ./docker/development/php-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
+        restart: unless-stopped
+        #        ports:
+        #            - "9001:9001"
+        depends_on:
+            - nginx
+            - mysql
+
+   npm:
+        build:
+            context: ./
+            dockerfile: docker/development/npm/Dockerfile
+        volumes:
+            - ./:/var/www
+        tty: true
+        restart: unless-stopped
+
+   redis:
+        image: redis
+        ports:
+            - "63799:6379"
